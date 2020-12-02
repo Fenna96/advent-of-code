@@ -28,14 +28,12 @@ def password_validator_second(password: str):
 
 def execute():
     passwords = get_input()
-    count = {'first': 0, 'second': 0}
+    count = {'first': [], 'second': []}
     for password in passwords:
-        if password_validator_first(password):
-            count['first'] += 1
-        if password_validator_second(password):
-            count['second'] += 1
-    print(f"Found {count['first']} valid passwords.")
-    print(f"Found {count['second']} valid passwords.")
+        password_validator_first(password) and count['first'].append(1)
+        password_validator_second(password) and count['second'].append(1)
+    print(f"Found {len(count['first'])} valid passwords.")
+    print(f"Found {len(count['second'])} valid passwords.")
 
 
 if __name__ == '__main__':
