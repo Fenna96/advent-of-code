@@ -18,7 +18,7 @@ def parse_password(password: str):
 
 def password_validator_first(password: str):
     lower, upper, letter, password = parse_password(password)
-    return lower <= password.count(letter) <= upper
+    return password.count(letter) in range(lower, upper + 1)
 
 
 def password_validator_second(password: str):
