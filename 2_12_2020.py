@@ -5,7 +5,7 @@ import numpy as np
 def get_input():
     with open('2_12_2020/input.txt', 'r') as input_file:
         passwords = input_file.readlines()
-    passwords = [x.replace('\n', '') for x in passwords]
+    passwords = [x.strip() for x in passwords]
     return passwords
 
 

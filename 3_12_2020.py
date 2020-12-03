@@ -5,7 +5,7 @@ import numpy as np
 def get_input():
     with open('3_12_2020/input.txt', 'r') as input_file:
         chart = input_file.readlines()
-    chart = [list(x.replace('\n', '')) for x in chart]
+    chart = [list(x.strip()) for x in chart]
     return chart
 
 
