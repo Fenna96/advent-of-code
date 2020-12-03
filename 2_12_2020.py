@@ -32,8 +32,8 @@ def execute():
     for password in passwords:
         password_validator_first(password) and count['first'].append(1)
         password_validator_second(password) and count['second'].append(1)
-    print(f"Found {len(count['first'])} valid passwords.")
-    print(f"Found {len(count['second'])} valid passwords.")
+    print(f"PART1\nFound {len(count['first'])} valid passwords.")
+    print(f"PART2\nFound {len(count['second'])} valid passwords.")
 
 
 if __name__ == '__main__':

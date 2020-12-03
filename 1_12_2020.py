@@ -32,9 +32,9 @@ def execute():
     numbers = get_input()
     total = 2020
     result = find_sum_of_two(numbers=numbers, total=total)
-    result and print(f"Found two numbers that sum to {2020}: {result}")
+    result and print(f"PART1\nFound two numbers that sum to {total}: {result}")
     result = find_sum_of_three(numbers=numbers, total=total)
-    result and print(f"Found three numbers that sum to {2020}: {result}")
+    result and print(f"PART2\nFound three numbers that sum to {total}: {result}")
 
 
 if __name__ == '__main__':

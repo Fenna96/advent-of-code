@@ -55,7 +55,7 @@ def execute():
     while nav.proceed():
         nav.next()
 
-    print(f"Met {nav.counter} while moving")
+    print(f"PART1\nMet {nav.counter} while moving")
 
     multiple_runs = [
         {'move_right': 1, 'move_down': 1},
@@ -72,7 +72,8 @@ def execute():
             nav.next()
         product *= nav.counter
 
-    print(f"Total product of trees met: {product}")
+    print(f"PART2\nTotal product of trees met: {product}")
+
 
 if __name__ == '__main__':
     execute()
