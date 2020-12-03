@@ -12,64 +12,58 @@ def get_input():
 class Navigator2D:
     def __init__(self, chart, movements, valuable):
         self.chart = chart
-        self.right_delimiter = len(chart[0])
-        self.move_right = movements['move_right']
-        self.move_down = movements['move_down']
-        self.position = [1, 1]
+        self.x_delimiter = len(chart[0])
+        self.move_x = movements['move_x']
+        self.move_y = movements['move_y']
+        self.position = {'x': 1, 'y': 1}
         self.valuable = valuable
         self.counter = 0
 
-    def make_my_move(self):
-        self.position[0] = (self.position[0] + self.move_right) % self.right_delimiter
-        self.position[1] += self.move_down
-
-    def evaluate_position(self):
-        if self.proceed() and self.chart[self.position[1] - 1][self.position[0] - 1] == self.valuable:
+    def move(self):
+        self.position['x'] = (self.position['x'] + self.move_x) % self.x_delimiter
+        self.position['y'] += self.move_y
+        if self.can_move() and self.chart[self.position['y'] - 1][self.position['x'] - 1] == self.valuable:
             self.counter += 1
 
-    def next(self):
-        self.make_my_move()
-        self.evaluate_position()
-
-    def proceed(self):
-        return self.position[1] <= len(self.chart)
+    def can_move(self):
+        return self.position['y'] <= len(self.chart)
 
     def reset(self, movements=None):
-        self.position = [1, 1]
+        self.position = {'x': 1, 'y': 1}
         self.counter = 0
         if movements:
-            self.move_right = movements['move_right']
-            self.move_down = movements['move_down']
+            self.move_x = movements['move_x']
+            self.move_y = movements['move_y']
 
 
 def execute():
     nav = Navigator2D(
         chart=get_input(),
         movements={
-            'move_right': 3,
-            'move_down': 1
+            'move_x': 3,
+            'move_y': 1
         },
         valuable='#'
     )
 
-    while nav.proceed():
-        nav.next()
+    while nav.can_move():
+        nav.move()
 
     print(f"PART1\nMet {nav.counter} while moving")
 
     multiple_runs = [
-        {'move_right': 1, 'move_down': 1},
-        {'move_right': 3, 'move_down': 1},
-        {'move_right': 5, 'move_down': 1},
-        {'move_right': 7, 'move_down': 1},
-        {'move_right': 1, 'move_down': 2}
+        {'move_x': 1, 'move_y': 1},
+        {'move_x': 3, 'move_y': 1},
+        {'move_x': 5, 'move_y': 1},
+        {'move_x': 7, 'move_y': 1},
+        {'move_x': 1, 'move_y': 2}
     ]
     product = 1
 
     for run in multiple_runs:
         nav.reset(movements=run)
-        while nav.proceed():
-            nav.next()
+        while nav.can_move():
+            nav.move()
         product *= nav.counter
 
     print(f"PART2\nTotal product of trees met: {product}")
