@@ -5,7 +5,7 @@ import numpy as np
 def get_input():
     with open('3_12_2020/input.txt', 'r') as input_file:
         chart = input_file.readlines()
-    chart = [list(x.strip()) for x in chart]
+    chart = [x.strip() for x in chart]
     return chart
 
 
@@ -15,21 +15,23 @@ class Navigator2D:
         self.x_delimiter = len(chart[0])
         self.move_x = movements['move_x']
         self.move_y = movements['move_y']
-        self.position = {'x': 1, 'y': 1}
         self.valuable = valuable
+        self.x = 1
+        self.y = 1
         self.counter = 0
 
     def move(self):
-        self.position['x'] = (self.position['x'] + self.move_x) % self.x_delimiter
-        self.position['y'] += self.move_y
-        if self.can_move() and self.chart[self.position['y'] - 1][self.position['x'] - 1] == self.valuable:
+        self.x = (self.x + self.move_x) % self.x_delimiter
+        self.y += self.move_y
+        if self.can_move() and self.chart[self.y - 1][self.x - 1] == self.valuable:
             self.counter += 1
 
     def can_move(self):
-        return self.position['y'] <= len(self.chart)
+        return self.y <= len(self.chart)
 
-    def reset(self, movements=None):
-        self.position = {'x': 1, 'y': 1}
+    def restart(self, movements=None):
+        self.x = 1
+        self.y = 1
         self.counter = 0
         if movements:
             self.move_x = movements['move_x']
@@ -51,6 +53,7 @@ def execute():
 
     print(f"PART1\nMet {nav.counter} while moving")
 
+    product = 1
     multiple_runs = [
         {'move_x': 1, 'move_y': 1},
         {'move_x': 3, 'move_y': 1},
@@ -58,10 +61,9 @@ def execute():
         {'move_x': 7, 'move_y': 1},
         {'move_x': 1, 'move_y': 2}
     ]
-    product = 1
 
     for run in multiple_runs:
-        nav.reset(movements=run)
+        nav.restart(movements=run)
         while nav.can_move():
             nav.move()
         product *= nav.counter
