@@ -16,18 +16,14 @@ def execute():
     raw_seats = get_input()
     seats = list(map(process_data, raw_seats))
 
-    compute_id = lambda x: x[0] * 8 + x[1]
-    seats_id = list(map(compute_id, seats))
-
-    print(f"PART1\nHighest seat_id: {max(seats_id)}")
-
-    possible_seats = set((i, j) for i in range(128) for j in range(8))
-    for seat in possible_seats - set(seats):
-        seat_id = compute_id(seat)
+    seats_id = list(map(lambda x: x[0] * 8 + x[1], seats))
+    for seat in set((i, j) for i in range(128) for j in range(8)) - set(seats):
+        seat_id = seat[0] * 8 + seat[1]
         if {seat_id - 1, seat_id + 1}.issubset(seats_id):
             break
 
-    print(f"PART2\nYour seat_id: {seat_id}")
+    print(f"PART1\nHighest seatID: {max(seats_id)}")
+    print(f"PART2\nYour seatID: {seat_id}")
 
 
 if __name__ == '__main__':
