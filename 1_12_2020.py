@@ -4,8 +4,7 @@ import numpy as np
 
 def get_input():
     with open('1_12_2020/input.txt', 'r') as input_file:
-        numbers = [int(x.strip()) for x in input_file.readlines()]
-    return numbers
+        return [int(x.strip()) for x in input_file.readlines()]
 
 
 def find_sum_of_two(numbers, total=2020):

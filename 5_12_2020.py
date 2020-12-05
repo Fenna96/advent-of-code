@@ -1,9 +1,9 @@
 import re
 
+
 def get_input():
     with open('5_12_2020/input.txt', 'r') as input_file:
-        raw_seats = [x.strip() for x in input_file.readlines()]
-    return raw_seats
+        return [x.strip() for x in input_file.readlines()]
 
 
 def process_data(raw_data):
@@ -16,7 +16,7 @@ def execute():
     raw_seats = get_input()
     seats = list(map(process_data, raw_seats))
 
-    compute_id = lambda seat: seat[0] * 8 + seat[1]
+    compute_id = lambda x: x[0] * 8 + x[1]
     seats_id = list(map(compute_id, seats))
 
     print(f"PART1\nHighest seat_id: {max(seats_id)}")

@@ -5,8 +5,7 @@ import re
 
 def get_input():
     with open('4_12_2020/input.txt', 'r') as input_file:
-        raw_passports = [x.strip() for x in input_file.readlines()]
-    return raw_passports
+        return [x.strip() for x in input_file.readlines()]
 
 
 def process_data(raw_data):

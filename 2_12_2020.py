@@ -4,8 +4,7 @@ import numpy as np
 
 def get_input():
     with open('2_12_2020/input.txt', 'r') as input_file:
-        passwords = [x.strip() for x in input_file.readlines()]
-    return passwords
+        return [x.strip() for x in input_file.readlines()]
 
 
 def parse_password(password: str):
