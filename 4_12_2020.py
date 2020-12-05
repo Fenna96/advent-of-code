@@ -14,19 +14,16 @@ def process_data(raw_data):
             processed_datas.append(current_processed_data)
             current_processed_data = {}
             continue
-        key_values = row.split()
-        fields = {}
-        for couple in key_values:
-            key, value = couple.split(':')
-            fields[key] = value
-        current_processed_data.update(fields)
-    processed_datas.append(current_processed_data)
+        for key_value in row.split():
+            key, value = key_value.split(':')
+            current_processed_data[key] = value
+    current_processed_data and processed_datas.append(current_processed_data)
     return processed_datas
 
 
 def validate_passport(passport):
     fields = set(['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'])
-    return fields.issubset(set(passport.keys()))
+    return fields.issubset(passport.keys())
 
 
 def validate_fields(passport):
