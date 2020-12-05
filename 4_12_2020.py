@@ -7,22 +7,22 @@ def get_input():
 
 
 def process_data(raw_data):
-    processed_datas = []
+    processed_data = []
     current_processed_data = {}
     for row in raw_data:
         if not row:
-            processed_datas.append(current_processed_data)
+            processed_data.append(current_processed_data)
             current_processed_data = {}
             continue
         for key_value in row.split():
             key, value = key_value.split(':')
             current_processed_data[key] = value
-    current_processed_data and processed_datas.append(current_processed_data)
-    return processed_datas
+    current_processed_data and processed_data.append(current_processed_data)
+    return processed_data
 
 
 def validate_passport(passport):
-    fields = set(['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'])
+    fields = {'byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'}
     return fields.issubset(passport.keys())
 
 

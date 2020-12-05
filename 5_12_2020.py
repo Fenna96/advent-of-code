@@ -24,7 +24,7 @@ def execute():
     possible_seats = set((i, j) for i in range(128) for j in range(8))
     for seat in possible_seats - set(seats):
         seat_id = compute_id(seat)
-        if set([seat_id - 1, seat_id + 1]).issubset(seats_id):
+        if {seat_id - 1, seat_id + 1}.issubset(seats_id):
             break
 
     print(f"PART2\nYour seat_id: {seat_id}")
