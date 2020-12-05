@@ -4,8 +4,7 @@ import numpy as np
 
 def get_input():
     with open('_12_2020/input.txt', 'r') as input_file:
-        inputs = input_file.readlines()
-    inputs = [x.strip() for x in inputs]
+        inputs = [x.strip() for x in input_file.readlines()]
     return inputs
 
 

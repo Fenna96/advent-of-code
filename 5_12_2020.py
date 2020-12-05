@@ -2,8 +2,7 @@ import re
 
 def get_input():
     with open('5_12_2020/input.txt', 'r') as input_file:
-        raw_seats = input_file.readlines()
-    raw_seats = [x.strip() for x in raw_seats]
+        raw_seats = [x.strip() for x in input_file.readlines()]
     return raw_seats
 
 

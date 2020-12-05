@@ -4,8 +4,7 @@ import numpy as np
 
 def get_input():
     with open('3_12_2020/input.txt', 'r') as input_file:
-        chart = input_file.readlines()
-    chart = [x.strip() for x in chart]
+        chart = [x.strip() for x in input_file.readlines()]
     return chart
 
 
