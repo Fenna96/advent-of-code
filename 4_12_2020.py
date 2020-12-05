@@ -58,17 +58,9 @@ def execute():
     raw_passports = get_input()
     passports = process_data(raw_data=raw_passports)
 
-    count = []
-    for passport in passports:
-        validate_passport(passport=passport) and count.append(1)
-    print(f"PART1\n{len(count)} valid passports")
-    print()
+    print(f"PART1\n{sum(map(validate_passport, passports))} valid passports")
+    print(f"PART1\n{sum(map(validate_passport_and_fields, passports))} valid passports")
 
-    count = []
-    for passport in passports:
-        validate_passport_and_fields(passport=passport) and count.append(1)
-    print(f"PART2\n{len(count)} valid passports")
-    print()
 
 if __name__ == '__main__':
     execute()
