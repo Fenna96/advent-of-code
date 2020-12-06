@@ -19,7 +19,7 @@ def execute():
     seats_id = list(map(lambda x: x[0] * 8 + x[1], seats))
     for seat in set((i, j) for i in range(128) for j in range(8)) - set(seats):
         seat_id = seat[0] * 8 + seat[1]
-        if {seat_id - 1, seat_id + 1}.issubset(seats_id):
+        if not {seat_id - 1, seat_id + 1}.issubset(seats_id):
             break
 
     print(f"PART1\nHighest seatID: {max(seats_id)}")
