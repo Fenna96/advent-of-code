@@ -58,28 +58,11 @@ def process_data(raw_data):
 
 
 def can_contain(bag, contain: str = 'shiny gold'):
-    if not bag.get_contain():
-        return False
-
-    can = False
-    for bag in bag.get_contain().values():
-        son_bag = bag['bag']
-        if str(son_bag) == contain:
-            return True
-        can = can or can_contain(bag=son_bag)
-
-    return can
+    return any([str(son['bag']) == contain or can_contain(bag=son['bag']) for son in bag.get_contain().values()])
 
 
 def count_bag_sons(bag):
-    if not bag.get_contain():
-        return 1
-
-    count = 1
-    for son in bag.get_contain().values():
-        count += count_bag_sons(bag=son['bag']) * son['count']
-
-    return count
+    return 1 + sum([count_bag_sons(bag=son['bag']) * son['count'] for son in bag.get_contain().values()])
 
 
 def execute():
