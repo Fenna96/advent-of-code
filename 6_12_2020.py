@@ -11,7 +11,7 @@ def process_data(raw_data):
     current_processed_data = Counter()
     for row in raw_data:
         if not row:
-            processed_data.append(current_processed_data)
+            processed_data.append(current_processed_data.update({'members'}))
             current_processed_data = Counter()
             continue
         current_processed_data['members'] = current_processed_data.get('members', 0) + 1
