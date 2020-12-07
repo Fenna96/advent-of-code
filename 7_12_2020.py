@@ -25,13 +25,9 @@ def get_input():
 
 
 def register_bag(tone: str, color: str, bags: dict):
-    bag_identifier = f"{tone} {color}"
-    if bag_identifier not in bags:
-        bag = Bag(color=color, tone=tone)
-        bags[bag_identifier] = bag
-    else:
-        bag = bags[bag_identifier]
-    return bag
+    bag = Bag(color=color, tone=tone)
+    bags[str(bag)] = bags.get(str(bag), bag)
+    return bags[str(bag)]
 
 
 def process_data(raw_data):
