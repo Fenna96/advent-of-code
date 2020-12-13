@@ -15,8 +15,8 @@ class Bag:
     def get_contain(self):
         return self.contain
 
-    def set_contain(self, contain):
-        self.contain = contain
+    def update_contain(self, bag):
+        self.contain.update(bag)
 
 
 def get_input():
@@ -38,8 +38,8 @@ def process_data(raw_data):
         bag = register_bag(tone=tone, color=color, bags=bags)
         for contain_bag in [x for x in contain_string.split(', ') if 'no other bags' not in x]:
             count, tone, color = contain_bag.split(' ')[:3]
-            new_bag = register_bag(tone=tone, color=color, bags=bags)
-            bag.get_contain().update({str(new_bag): {'bag': new_bag, 'count': int(count)}})
+            contained_bag = register_bag(tone=tone, color=color, bags=bags)
+            bag.update_contain({str(contained_bag): {'bag': contained_bag, 'count': int(count)}})
 
     return bags
 
@@ -56,7 +56,7 @@ def execute():
     raw_rules = get_input()
     bags = process_data(raw_data=raw_rules)
 
-    print(f"PART1\nBags that can contain: {sum([1 if can_contain(bag=bag) else 0 for bag in bags.values()])}")
+    print(f"PART1\nBags that can contain: {len([bag for bag in bags.values() if can_contain(bag=bag)])}")
     print(f"PART2\nSons of shiny gold: {count_bag_sons(bags['shiny gold']) - 1}")  # '1' is the shiny bag
 
 
