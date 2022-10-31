@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
 from functools import cached_property
+from time import perf_counter
 from typing import NamedTuple
 
 
 def get_input():
     with open("3_12_2020/input.txt", "r") as input_file:
-        return [x.strip() for x in input_file.readlines()]
+        return input_file.read().splitlines()
 
 
 class Movement(NamedTuple):
@@ -78,4 +79,6 @@ def execute():
 
 
 if __name__ == "__main__":
+    t1_start = perf_counter()
     execute()
+    print(f"Exec time {perf_counter() - t1_start} seconds")
