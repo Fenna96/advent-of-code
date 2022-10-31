@@ -1,76 +1,101 @@
-import pandas as pd
-import numpy as np
-import re
-import copy
+from dataclasses import dataclass, field
+from functools import cached_property
+from time import perf_counter
+
+
+def increment(method):
+    def wrapper(cpu: "CPU", *args, **kwargs):
+        method(cpu, *args, **kwargs)
+        cpu.ip += 1
+
+    return wrapper
 
 
 def get_input():
-    with open('8_12_2020/input.txt', 'r') as input_file:
-        return [x.strip() for x in input_file.readlines()]
+    with open("8_12_2020/input.txt", "r") as input_file:
+        return input_file.read().splitlines()
 
 
+@dataclass
 class CPU:
-    def __init__(self, instructions):
-        self.accumulator = 0
-        self.ip = 0
-        self.operations = {
-            'acc': self.acc,
-            'jmp': self.jmp,
-            'nop': self.nop
+    instructions: list[tuple[str, int]]
+
+    register: set[int] = field(init=False)
+    ip: int = field(init=False)
+    accumulator: int = field(init=False)
+
+    _instructions: tuple[tuple[str, int]] = field(init=False)
+    _corrected: int = field(init=False, default=0)
+
+    def __post_init__(self):
+        self._instructions = tuple(self.instructions)
+        self._reset()
+
+    @cached_property
+    def nop_jump(self):
+        return {
+            self._instructions.index(instruction)
+            for instruction in self._instructions
+            if instruction[0] in ["jmp", "nop"]
         }
-        self.instructions = instructions
-        self.modified_instructions = copy.deepcopy(instructions)
-        self.register = []
-        self.nop_jump = [instructions.index(instruction) for instruction in instructions if instruction[0] in ['jmp', 'nop']]
 
-    def acc(self, value):
+    @cached_property
+    def corrector(self):
+        return {"jmp": "nop", "nop": "jmp"}
+
+    @increment
+    def acc(self, value: int):
         self.accumulator += value
-        self.ip += 1
 
-    def jmp(self, value):
-        self.ip += value
+    @increment
+    def jmp(self, value: int):
+        self.ip += value - 1
 
-    def nop(self, value):
-        self.ip += 1
+    @increment
+    def nop(self, _: int):
+        pass
 
-    def reset(self):
-        self.register = []
+    def _reset(self):
+        self.register = set()
         self.ip = 0
         self.accumulator = 0
-        self.modified_instructions = copy.deepcopy(self.instructions)
+        self.instructions[self._corrected] = self._instructions[self._corrected]
+
+    def _run(self):
+        operation, value = self.instructions[self.ip]
+        self.register.add(self.ip)
+        getattr(self, operation)(value)
+
+    def _correct_instructions(self):
+        index = self.nop_jump.pop()
+        self.instructions[index] = (
+            self.corrector[self._instructions[index][0]],
+            self._instructions[index][1],
+        )
+        self._corrected = index
 
     def run_one(self):
-        self.reset()
+        self._reset()
         while self.ip not in self.register:
-            operation, value = self.instructions[self.ip]
-            self.register.append(self.ip) or self.operations[operation](value)
+            self._run()
         return self.accumulator
 
-    def correct_instructions(self, exclude):
-        self.reset()
-        index = min(set(self.nop_jump) - set(exclude))
-        self.modified_instructions[index] = ('jmp' if self.modified_instructions[index][0] == 'nop' else 'nop',
-                                             self.modified_instructions[index][1])
-        return index
-
     def run_two(self):
-        self.reset()
-        correction_tries = []
-        while self.ip != len(self.modified_instructions):
+        self._reset()
+        while self.ip < len(self.instructions):
             if self.ip in self.register:
-                correction_tries.append(self.correct_instructions(correction_tries))
-                continue
-            operation, value = self.modified_instructions[self.ip]
-            self.register.append(self.ip) or self.operations[operation](value)
+                self._reset()
+                self._correct_instructions()
+            else:
+                self._run()
         return self.accumulator
 
 
 def process_data(raw_data):
     instructions = []
     for line in raw_data:
-        operation, raw_value = line.split()
-        value = int(raw_value[1:]) * (-1) if raw_value[0] == '-' else int(raw_value[1:])
-        instructions.append((operation, value))
+        operation, value = line.split()
+        instructions.append((operation, eval(value)))
     return instructions
 
 
@@ -82,5 +107,7 @@ def execute():
     print(f"PART2\nAccumulator value: {program.run_two()}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    t1_start = perf_counter()
     execute()
+    print(f"Exec time {perf_counter() - t1_start} seconds")
