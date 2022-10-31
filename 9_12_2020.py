@@ -26,7 +26,7 @@ def find_weakness(numbers, not_valid):
     while subset_size < len(candidates):
         while offset < len(candidates) - subset_size:
             subset = candidates[offset : offset + subset_size]
-            if len(subset) > 1 and sum(subset) == not_valid:
+            if sum(subset) == not_valid:
                 return min(subset) + max(subset)
             offset += 1
 
