@@ -1,64 +1,79 @@
-import pandas as pd
-import numpy as np
-import re
+from dataclasses import dataclass, field
+from functools import lru_cache
+from time import perf_counter
 
 
-class Bag:
-    def __init__(self, color: str, tone: str):
-        self.color = color
-        self.tone = tone
-        self.contain = {}
+_BAGS = {}
 
-    def __str__(self):
-        return f"{self.tone} {self.color}"
 
-    def get_contain(self):
-        return self.contain
+class BagMeta(type):
+    def __call__(cls, *args, **kwargs):
+        if args not in _BAGS:
+            instance = super().__call__(*args, **kwargs)
+            _BAGS[args] = instance
+        return _BAGS[args]
 
-    def update_contain(self, bag):
-        self.contain.update(bag)
+
+@dataclass
+class Bag(metaclass=BagMeta):
+    tone: str
+    color: str
+
+    contain: dict = field(default_factory=dict)
+
+    def __iter__(self):
+        return iter((self.tone, self.color))
 
 
 def get_input():
-    with open('7_12_2020/input.txt', 'r') as input_file:
-        return [x.strip() for x in input_file.readlines()]
-
-
-def register_bag(tone: str, color: str, bags: dict):
-    bag = Bag(color=color, tone=tone)
-    bags[str(bag)] = bags.get(str(bag), bag)
-    return bags[str(bag)]
+    with open("7_12_2020/input.txt", "r") as input_file:
+        return input_file.read().splitlines()
 
 
 def process_data(raw_data):
-    bags = {}
     for line in raw_data:
-        bag_string, contain_string = line.split('contain ')
-        tone, color = bag_string.split(' ')[:2]
-        bag = register_bag(tone=tone, color=color, bags=bags)
-        for contain_bag in [x for x in contain_string.split(', ') if 'no other bags' not in x]:
-            count, tone, color = contain_bag.split(' ')[:3]
-            contained_bag = register_bag(tone=tone, color=color, bags=bags)
-            bag.update_contain({str(contained_bag): {'bag': contained_bag, 'count': int(count)}})
+        bag_string, contain_string = line.split(" bags contain ")
+        bag = Bag(*bag_string.split(" "))
+        if "no other bags" in contain_string:
+            continue
 
-    return bags
-
-
-def can_contain(bag, contain: str = 'shiny gold'):
-    return any([str(son['bag']) == contain or can_contain(bag=son['bag']) for son in bag.get_contain().values()])
+        for contain_bag in contain_string.split(", "):
+            count, tone, color = contain_bag.split(" ")[:3]
+            bag.contain |= {tuple(Bag(tone, color)): int(count)}
 
 
-def count_bag_sons(bag):
-    return 1 + sum([count_bag_sons(bag=son['bag']) * son['count'] for son in bag.get_contain().values()])
+@lru_cache
+def can_contain(bag_tone: str, bag_color: str, search_tone: str, search_color: str):
+    bag: Bag = _BAGS[(bag_tone, bag_color)]
+    return any(
+        [
+            son == (search_tone, search_color)
+            or can_contain(*son, search_tone, search_color)
+            for son in bag.contain.keys()
+        ]
+    )
+
+
+@lru_cache
+def count_bag_sons(bag_tone: str, bag_color: str):
+    bag: Bag = _BAGS[(bag_tone, bag_color)]
+    return 1 + sum([count_bag_sons(*son) * count for son, count in bag.contain.items()])
 
 
 def execute():
     raw_rules = get_input()
-    bags = process_data(raw_data=raw_rules)
+    process_data(raw_data=raw_rules)
 
-    print(f"PART1\nBags that can contain: {len([bag for bag in bags.values() if can_contain(bag=bag)])}")
-    print(f"PART2\nSons of shiny gold: {count_bag_sons(bags['shiny gold']) - 1}")  # '1' is the shiny bag
+    to_search = ("shiny", "gold")
+    print(
+        f"PART1\nBags that can contain: {sum([can_contain(*bag, *to_search) for bag in _BAGS.keys()])}"
+    )
+    print(
+        f"PART2\nSons of shiny gold: {count_bag_sons(*to_search) - 1}"
+    )  # '1' is the shiny bag
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    t1_start = perf_counter()
     execute()
+    print(f"Exec time {perf_counter() - t1_start} seconds")
