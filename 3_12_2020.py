@@ -1,69 +1,81 @@
+from dataclasses import dataclass, field
+from functools import cached_property
+from typing import NamedTuple
+
+
 def get_input():
-    with open('3_12_2020/input.txt', 'r') as input_file:
+    with open("3_12_2020/input.txt", "r") as input_file:
         return [x.strip() for x in input_file.readlines()]
 
 
+class Movement(NamedTuple):
+    move_x: int
+    move_y: int
+
+
+@dataclass
 class Navigator2D:
-    def __init__(self, chart, movements, valuable):
-        self.chart = chart
-        self.x_delimiter = len(chart[0])
-        self.move_x = movements['move_x']
-        self.move_y = movements['move_y']
-        self.valuable = valuable
-        self.x = 1
-        self.y = 1
-        self.counter = 0
+    chart: list[str]
+    valuable: str
 
-    def move(self):
-        self.x = (self.x + self.move_x) % self.x_delimiter
-        self.y += self.move_y
-        if self.can_move() and self.chart[self.y - 1][self.x - 1] == self.valuable:
-            self.counter += 1
+    movement: Movement = field(init=False)
+    x: int = field(init=False)
+    y: int = field(init=False)
+    counter: int = field(init=False)
 
-    def can_move(self):
-        return self.y <= len(self.chart)
+    @cached_property
+    def x_delimiter(self):
+        return len(self.chart[0])
 
-    def restart(self, movements=None):
-        self.x = 1
-        self.y = 1
-        self.counter = 0
-        if movements:
-            self.move_x = movements['move_x']
-            self.move_y = movements['move_y']
+    @property
+    def current_position(self):
+        return self.chart[self.y][self.x]
+
+    @property
+    def valid_position(self):
+        return self.y < len(self.chart)
+
+    @property
+    def valuable_position(self):
+        return self.valid_position and self.current_position == self.valuable
+
+    def _move(self):
+        self.x = (self.x + self.movement.move_x) % self.x_delimiter
+        self.y += self.movement.move_y
+        self.counter += self.valuable_position
+
+    def _setup(self, move: Movement):
+        self.x = self.y = self.counter = 0
+        self.movement = move
+
+    def _run(self):
+        while self.valid_position:
+            self._move()
+
+    def execute(self, move: Movement):
+        self._setup(move)
+        self._run()
+        return self.counter
 
 
 def execute():
-    nav = Navigator2D(
-        chart=get_input(),
-        movements={
-            'move_x': 3,
-            'move_y': 1
-        },
-        valuable='#'
-    )
-
-    while nav.can_move():
-        nav.move()
-
-    print(f"PART1\nMet {nav.counter} while moving")
+    nav = Navigator2D(chart=get_input(), valuable="#")
+    result = nav.execute(run=Movement(3, 1))
+    print(f"PART1\nMet {result} while moving")
 
     product = 1
-    multiple_runs = [
-        {'move_x': 1, 'move_y': 1},
-        {'move_x': 3, 'move_y': 1},
-        {'move_x': 5, 'move_y': 1},
-        {'move_x': 7, 'move_y': 1},
-        {'move_x': 1, 'move_y': 2}
+    movements = [
+        Movement(1, 1),
+        Movement(3, 1),
+        Movement(5, 1),
+        Movement(7, 1),
+        Movement(1, 2),
     ]
-
-    for run in multiple_runs:
-        nav.restart(movements=run)
-        while nav.can_move():
-            nav.move()
-        product *= nav.counter
+    for move in movements:
+        product *= nav.execute(move)
 
     print(f"PART2\nTotal product of trees met: {product}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     execute()
